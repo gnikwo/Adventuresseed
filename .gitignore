@@ -1,0 +1,6 @@
+adventuresseed/__pycache__
+adventuresseed/settings_custom.py
+core/__pycache__
+core/migrations
+db.sqlite3
+env/

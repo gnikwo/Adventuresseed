@@ -1,5 +1,6 @@
 django
 django-jinja
+pillow
 pyopenssl
 whoosh
 django-debug-toolbar
