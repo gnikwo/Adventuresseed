@@ -27,14 +27,14 @@ class ParticipationForm(forms.ModelForm):
 class CharacterForm(forms.ModelForm):
     class Meta:
         model = Character
-        fields = ['name', ]
+        fields = ['name', 'template']
 
 class ValueForm(forms.ModelForm):
     class Meta:
         model = Value
         fields = ['character', 'field', 'value']
 
-    field = forms.ModelChoiceField(queryset=Universe.objects.all()[0].template.get().fields, empty_label="(Nothing)")
+    #field = forms.ModelChoiceField(queryset=Universe.objects.all()[0].template.get().fields, empty_label="(Nothing)")
 
 class GameForm(forms.ModelForm):
     class Meta:
@@ -54,7 +54,7 @@ class UniverseForm(forms.ModelForm):
 class TemplateForm(forms.ModelForm):
     class Meta:
         model = Template
-        fields = ['universe', 'image']
+        fields = ['name', 'universe', 'image']
 
 class FieldForm(forms.ModelForm):
     class Meta:

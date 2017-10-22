@@ -1,4 +1,20 @@
 from django.db import models
+import os
+from uuid import uuid4
+
+def path_and_rename(path):
+    def wrapper(instance, filename):
+        ext = filename.split('.')[-1]
+        # get filename
+        if instance.pk:
+            filename = '{}.{}'.format(instance.pk, ext)
+        else:
+            # set filename as random string
+            filename = '{}.{}'.format(uuid4().hex, ext)
+        # return the whole path to the file
+        return os.path.join(path, filename)
+    return wrapper
+
 
 class Player(models.Model):
     name = models.CharField(max_length=20, blank=False)
@@ -18,6 +34,7 @@ class Participation(models.Model):
 
 class Character(models.Model):
     name = models.CharField(max_length=20, blank=False)
+    template = models.ForeignKey("Template", related_name="characters", null=False)
     creation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -56,19 +73,20 @@ class Universe(models.Model):
         return self.name
 
 class Template(models.Model):
-    image = models.ImageField(upload_to="media/templates/", null=False)
+    name = models.CharField(max_length=50, blank=False)
+    image = models.ImageField(upload_to=path_and_rename("media/templates/"), null=False)
     universe = models.ForeignKey("Universe", related_name="template", null=False)
     creation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return str(self.universe)
+        return str(self.universe) + " - " + str(self.name)
 
 class Field(models.Model):
     name = models.CharField(max_length=40, blank=False)
-    position_x = models.IntegerField()
-    position_y = models.IntegerField()
-    scale_x = models.IntegerField()
-    scale_y = models.IntegerField()
+    position_x = models.IntegerField(null=False, default=0)
+    position_y = models.IntegerField(null=False, default=0)
+    scale_x = models.IntegerField(null=False, default=0)
+    scale_y = models.IntegerField(null=False, default=0)
     template = models.ForeignKey("Template", related_name="fields", null=False)
 
     def __str__(self):
@@ -95,10 +113,10 @@ class Layer(models.Model):
 class Entity(models.Model):
     class Meta:
         verbose_name_plural = "Entities"
-    position_x = models.IntegerField(null=False)
-    position_y = models.IntegerField(null=False)
-    scale_x = models.IntegerField(null=False)
-    scale_y = models.IntegerField(null=False)
+    position_x = models.IntegerField(null=False, default=0)
+    position_y = models.IntegerField(null=False, default=0)
+    scale_x = models.IntegerField(null=False, default=0)
+    scale_y = models.IntegerField(null=False, default=0)
     layer = models.ForeignKey("Layer", related_name="entities", null=False)
     sprite = models.ForeignKey("Sprite", related_name="entities", null=False)
     creation_date = models.DateTimeField(auto_now_add=True)

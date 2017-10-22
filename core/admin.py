@@ -45,7 +45,7 @@ class ValueInline(admin.TabularInline):
     fieldsets = (
         (
             (None, {
-                'fields': ('fied', 'value')
+                'fields': ('field', 'value')
             })
         ),
     )
@@ -81,7 +81,7 @@ class TemplateInline(admin.TabularInline):
     fieldsets = (
         (
             (None, {
-                'fields': ('image', )
+                'fields': ('name', 'image')
             })
         ),
     )

@@ -4,3 +4,4 @@ core/__pycache__
 core/migrations
 db.sqlite3
 env/
+media/
