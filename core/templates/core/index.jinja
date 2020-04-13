@@ -1,8 +1,39 @@
-{% extends "core/base.jinja" %}
+{% extends 'core/base.jinja' %}
+{% load static %}
 
 {% block content %}
+<div id='early_selections'>
+    <div id='early_selections_content'>
+		{% if game_master %}
+			{% include 'core/game_selection.jinja' %}
+		{% elif game_selected %}
+			{% include 'core/player_selection.jinja' %}
+		{% else %}
+			<p>Waiting for Master to select a Game...</p>
+		{% endif %}
+    </div>
+</div>
 
-    <a href="{% url 'game_master' %}">Game Master</a>
-    <a href="{% url 'player' %}">Player</a>
+<div id='content'>
+    <div id='tools_panel' hidden>
+    </div>
+	<div id='top_panel'>
+		<div id='characters_tab' class='tab'>
+			{% include 'core/characters_panel.jinja' %}
+		</div>
+		{% if game_master %}
+			<div id='maps_tab' class='tab'>
+				{% include 'core/maps.jinja' %}
+			</div>
+		{% endif %}
+		<div class='tab_grabs'>
+			<div class='tab_grab' tab='characters_tab'>Characters</div>
+			{% if game_master %}
+				<div class='tab_grab' tab='maps_tab'>Maps</div>
+			{% endif %}
+		</div>
+	</div>
+</div>
 
+<script src='{% static 'core/script/index.js' %}'></script>
 {% endblock %}

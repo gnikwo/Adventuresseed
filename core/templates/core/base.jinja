@@ -1,16 +1,14 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="fr">
+<html lang='fr'>
 <head>
     {% block head %}
     <title>{% block title %}Welcome!{% endblock %} - Adventure's seed</title>
     {% endblock %}
+    <link rel='stylesheet' type='text/css' href='{% static 'core/style/index.css' %}'>
 </head>
 
 <body>
-
-    <header>
-        Adventure's seed
-    </header>
 
     {% block content %}
         content

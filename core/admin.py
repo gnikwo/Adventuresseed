@@ -1,32 +1,8 @@
 from django.contrib import admin
 
-from .models import Player
-from .models import Participation
-from .models import Character
-from .models import Value
-from .models import Game
-from .models import Note
-from .models import Universe
-from .models import Template
-from .models import Field
-from .models import Map
-from .models import Layer
-from .models import Entity
-from .models import Sprite
+from .models import * 
 
-from .forms import PlayerForm
-from .forms import ParticipationForm
-from .forms import CharacterForm
-from .forms import ValueForm
-from .forms import GameForm
-from .forms import NoteForm
-from .forms import UniverseForm
-from .forms import TemplateForm
-from .forms import FieldForm
-from .forms import MapForm
-from .forms import LayerForm
-from .forms import EntityForm
-from .forms import SpriteForm
+from .forms import *
 
 class ParticipationInline(admin.TabularInline):
     model = Participation
@@ -34,6 +10,18 @@ class ParticipationInline(admin.TabularInline):
         (
             (None, {
                 'fields': ('player', 'character')
+            })
+        ),
+    )
+
+    extra = 0
+
+class SheetInline(admin.TabularInline):
+    model = Sheet 
+    fieldsets = (
+        (
+            (None, {
+                'fields': ('template', )
             })
         ),
     )
@@ -145,6 +133,10 @@ class ParticipationAdmin(admin.ModelAdmin):
 
 class CharacterAdmin(admin.ModelAdmin):
     form = CharacterForm
+    inlines = [SheetInline, ]
+
+class SheetAdmin(admin.ModelAdmin):
+    form = SheetForm
     inlines = [ValueInline, ]
 
 class ValueAdmin(admin.ModelAdmin):
@@ -152,7 +144,8 @@ class ValueAdmin(admin.ModelAdmin):
 
 class GameAdmin(admin.ModelAdmin):
     form = GameForm
-    inlines = [ParticipationInline, NoteInline]
+    list_display = ['name', 'universe', 'last_played_date', 'selected']
+    inlines = [ParticipationInline, NoteInline, MapInline]
 
 class NoteAdmin(admin.ModelAdmin):
     form = NoteForm
@@ -174,6 +167,7 @@ class MapAdmin(admin.ModelAdmin):
 
 class LayerAdmin(admin.ModelAdmin):
     form = LayerForm
+    list_display = ['map', 'name', 'layer_height', 'player_accessible']
     inlines = [EntityInline, ]
 
 class EntityAdmin(admin.ModelAdmin):
@@ -186,6 +180,7 @@ class SpriteAdmin(admin.ModelAdmin):
 admin.site.register(Player, PlayerAdmin)
 admin.site.register(Participation, ParticipationAdmin)
 admin.site.register(Character, CharacterAdmin)
+admin.site.register(Sheet, SheetAdmin)
 admin.site.register(Value, ValueAdmin)
 admin.site.register(Game, GameAdmin)
 admin.site.register(Note, NoteAdmin)

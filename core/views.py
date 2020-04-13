@@ -1,20 +1,51 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse
 
 from django.views.generic import TemplateView
+
+from core.models import *
 
 class IndexView(TemplateView):
     template_name = 'core/index.jinja'
 
     def get_context_data(self, **kwargs):
         kwargs = super(IndexView, self).get_context_data(**kwargs)
-        kwargs['players'] = []
+        try:
+            game = Game.objects.filter(selected=True)[0]
+            kwargs['game_selected'] = True
+            kwargs['game'] = game
+            kwargs['participations'] = Participation.objects.filter(game=game)
+        except IndexError as e:
+            kwargs['game_selected'] = False 
         return kwargs
 
-class PlayerView(TemplateView):
-    template_name = 'core/player.jinja'
-
-
 class GameMasterView(TemplateView):
-    template_name = 'core/game_master.jinja'
+    template_name = 'core/index.jinja'
+
+    def get_context_data(self, **kwargs):
+        kwargs = super(GameMasterView, self).get_context_data(**kwargs)
+        kwargs['game_master'] = True
+        kwargs['games'] = Game.objects.order_by('last_played_date')
+        return kwargs
+
+def player_selection(request):
+    kwargs = {}
+    try:
+        game = Game.objects.filter(selected=True)[0]
+        kwargs['game_selected'] = True
+        kwargs['game'] = game
+        kwargs['participations'] = Participation.objects.filter(game=game)
+    except IndexError as e:
+        kwargs['game_selected'] = False 
+    return render(request, 'core/player_selection.jinja', kwargs)
+
+def characters_panel(request):
+    kwargs = {}
+    try:
+        game = Game.objects.filter(selected=True)[0]
+        kwargs['game_selected'] = True
+        kwargs['participations'] = Participation.objects.filter(game=game)
+    except IndexError as e:
+        kwargs['game_selected'] = False 
+    return render(request, 'core/characters_panel.jinja', kwargs)

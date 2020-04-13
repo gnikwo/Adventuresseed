@@ -1,23 +1,12 @@
 from django import forms
+import datetime
 
-from .models import Player
-from .models import Participation
-from .models import Character
-from .models import Value
-from .models import Game
-from .models import Note
-from .models import Universe
-from .models import Template
-from .models import Field
-from .models import Map
-from .models import Layer
-from .models import Entity
-from .models import Sprite
+from .models import * 
 
 class PlayerForm(forms.ModelForm):
     class Meta:
         model = Player
-        fields = ['name', ]
+        fields = ['name', 'color']
 
 class ParticipationForm(forms.ModelForm):
     class Meta:
@@ -27,19 +16,32 @@ class ParticipationForm(forms.ModelForm):
 class CharacterForm(forms.ModelForm):
     class Meta:
         model = Character
-        fields = ['name', 'template']
+        fields = ['name', ]
+
+class SheetForm(forms.ModelForm):
+    class Meta:
+        model = Sheet 
+        fields = ['character', 'template']
 
 class ValueForm(forms.ModelForm):
     class Meta:
         model = Value
-        fields = ['character', 'field', 'value']
+        fields = ['sheet', 'field', 'value']
 
     #field = forms.ModelChoiceField(queryset=Universe.objects.all()[0].template.get().fields, empty_label="(Nothing)")
 
 class GameForm(forms.ModelForm):
     class Meta:
         model = Game
-        fields = ['name', 'universe']
+        fields = ['name', 'universe', 'last_played_date', 'selected']
+
+    def save(self, commit=True):
+        instance = super(GameForm, self).save(commit=False)
+        if getattr(self.changed_data, 'selected', True):
+            instance.last_played_date = datetime.datetime.now()
+            instance.save()
+            Game.objects.all().update(selected=False);
+        return instance
 
 class NoteForm(forms.ModelForm):
     class Meta:
@@ -69,7 +71,7 @@ class MapForm(forms.ModelForm):
 class LayerForm(forms.ModelForm):
     class Meta:
         model = Layer
-        fields = ['map', 'name', 'layer_height']
+        fields = ['map', 'name', 'layer_height', 'player_accessible']
 
 class EntityForm(forms.ModelForm):
     class Meta:
