@@ -1,0 +1,5 @@
+{% for game in games %}
+    <div class='game selectable'>
+        {{ game.name }} {% if game.selected %} (selected) {% endif %}
+    </div>
+{% endfor %}

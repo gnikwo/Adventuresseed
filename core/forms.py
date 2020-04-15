@@ -1,84 +1,94 @@
 from django import forms
 import datetime
 
-from .models import * 
-
-class PlayerForm(forms.ModelForm):
-    class Meta:
-        model = Player
-        fields = ['name', 'color']
-
-class ParticipationForm(forms.ModelForm):
-    class Meta:
-        model = Participation
-        fields = ['game', 'player', 'character']
+from .models import *
 
 class CharacterForm(forms.ModelForm):
     class Meta:
         model = Character
-        fields = ['name', ]
+        fields = ['game', 'name', 'player', 'chat_name', 'color', 'profile_picture', 'template', 'notes']
 
-class SheetForm(forms.ModelForm):
-    class Meta:
-        model = Sheet 
-        fields = ['character', 'template']
 
 class ValueForm(forms.ModelForm):
     class Meta:
         model = Value
-        fields = ['sheet', 'field', 'value']
+        fields = ['character', 'attribute', 'value']
 
-    #field = forms.ModelChoiceField(queryset=Universe.objects.all()[0].template.get().fields, empty_label="(Nothing)")
 
 class GameForm(forms.ModelForm):
     class Meta:
         model = Game
-        fields = ['name', 'universe', 'last_played_date', 'selected']
+        fields = ['name', 'universe', 'active', 'last_played_date', 'notes']
 
     def save(self, commit=True):
         instance = super(GameForm, self).save(commit=False)
-        if getattr(self.changed_data, 'selected', True):
+        if getattr(self.changed_data, 'active', True):
             instance.last_played_date = datetime.datetime.now()
             instance.save()
-            Game.objects.all().update(selected=False);
+            Game.objects.all().update(active=False);
         return instance
 
-class NoteForm(forms.ModelForm):
+class MessageForm(forms.ModelForm):
     class Meta:
-        model = Note
-        fields = ['name', 'text']
+        model = Message
+        fields = ['text', 'game', 'character', 'image']
+
 
 class UniverseForm(forms.ModelForm):
     class Meta:
         model = Universe
         fields = ['name']
 
-class TemplateForm(forms.ModelForm):
-    class Meta:
-        model = Template
-        fields = ['name', 'universe', 'image']
 
-class FieldForm(forms.ModelForm):
+class CharacterTemplateForm(forms.ModelForm):
     class Meta:
-        model = Field
-        fields = ['template', 'name', 'position_x', 'position_y', 'scale_x', 'scale_y']
+        model = CharacterTemplate
+        fields = ['name', 'universe']
+
+
+class AttributeForm(forms.ModelForm):
+    class Meta:
+        model = Attribute
+        fields = ['name', 'category']
+
+
+class AttributeCategoryForm(forms.ModelForm):
+    class Meta:
+        model = AttributeCategory
+        fields = ['name', 'template']
+
 
 class MapForm(forms.ModelForm):
     class Meta:
         model = Map
-        fields = ['game', 'name', 'active']
+        fields = ['game', 'name', 'active', 'order']
+
 
 class LayerForm(forms.ModelForm):
     class Meta:
         model = Layer
-        fields = ['map', 'name', 'layer_height', 'player_accessible']
+        fields = ['map', 'name', 'order', 'editable']
+
 
 class EntityForm(forms.ModelForm):
     class Meta:
         model = Entity
-        fields = ['layer', 'sprite', 'position_x', 'position_y', 'scale_x', 'scale_y']
+        fields = ['layer', 'sprite', 'position_x', 'position_y', 'scale_x', 'scale_y', 'rotation']
+
 
 class SpriteForm(forms.ModelForm):
     class Meta:
         model = Sprite
+        fields = ['category', 'image']
+
+
+class SpriteCategoryForm(forms.ModelForm):
+    class Meta:
+        model = SpriteCategory
+        fields = ['name']
+
+
+class ImageForm(forms.ModelForm):
+    class Meta:
+        model = Image
         fields = ['name', 'image']

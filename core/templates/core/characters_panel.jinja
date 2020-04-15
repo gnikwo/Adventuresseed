@@ -1,0 +1,7 @@
+{% if game_selected %}
+    {% for character in game.characters.all %}
+        <div class='character selectable selected'>
+            {{ character.name }} ({{ character.player }})
+        </div>
+    {% endfor %}
+{% endif %}

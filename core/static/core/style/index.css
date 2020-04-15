@@ -1,0 +1,114 @@
+/* ===== PAGE ===== */
+html {
+    width: 100vw;
+    height: 100vh;
+    background: white;
+}
+
+body {
+    margin: 0;
+    height: 100%;
+}
+
+.hidden {
+	display: none !important;
+}
+
+#content {
+    width: 100%;
+    height: 100%;
+
+	overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* ===== GENERIC ===== */
+.selectable {
+    margin: 20px;
+    padding: 30px;
+    display: flex;
+	flex-direction: column;
+	justify-content: center;
+	border: 1px solid black;
+}
+
+.selectable:hover {
+	background: darkgrey;
+}
+
+.selected {
+    background: lightgrey;
+}
+
+/* ===== EARLY SELECTIONS ===== */
+#early_selections {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    z-index: 14;
+    background: gray;
+}
+
+#early_selections_content {
+    display: flex;
+    justify-content: center;
+    height: 200px;
+    background: lightgray;
+}
+
+/* ===== TOP PANEL ===== */
+#top_panel {
+	position: absolute;
+	transition: ease-in-out top 0.5s;
+	background: whitesmoke;
+	width: 100%;
+	height: 200px;
+	top: -200px;
+	border-bottom: solid 1px black;
+}
+
+#top_panel.panel_out {
+	top: 0px;
+}
+
+#top_panel > .tab {
+	display: none;
+	width: 100%;
+	height: 100%;
+}
+
+#top_panel > .tab.active {
+	display: flex;
+	justify-content: center;
+}
+
+#top_panel > .tab_grabs {
+	display: flex;
+	justify-content: center;
+	position: absolute;
+	text-align: center;
+	top: 200px;
+	width: 100%;
+}
+
+#top_panel .tab_grab {
+	border-bottom: solid 1px black;
+	border-right: solid 1px black;
+	background: darkgrey;
+	padding: 5px;
+	height: 20px;
+	text-align: center;
+}
+
+#top_panel .tab_grab:first-child {
+	border-left: solid 1px black;
+}
+
+#top_panel .tab_grab.active {
+	background: whitesmoke;
+}

@@ -1,39 +1,15 @@
 from django.contrib import admin
 
-from .models import * 
+from .models import *
 
 from .forms import *
-
-class ParticipationInline(admin.TabularInline):
-    model = Participation
-    fieldsets = (
-        (
-            (None, {
-                'fields': ('player', 'character')
-            })
-        ),
-    )
-
-    extra = 0
-
-class SheetInline(admin.TabularInline):
-    model = Sheet 
-    fieldsets = (
-        (
-            (None, {
-                'fields': ('template', )
-            })
-        ),
-    )
-
-    extra = 0
 
 class ValueInline(admin.TabularInline):
     model = Value
     fieldsets = (
         (
             (None, {
-                'fields': ('field', 'value')
+                'fields': ('character', 'value')
             })
         ),
     )
@@ -52,8 +28,8 @@ class GameInline(admin.TabularInline):
 
     extra = 0
 
-class NoteInline(admin.TabularInline):
-    model = Note
+class MessageInline(admin.TabularInline):
+    model = Message
     fieldsets = (
         (
             (None, {
@@ -64,8 +40,8 @@ class NoteInline(admin.TabularInline):
 
     extra = 0
 
-class TemplateInline(admin.TabularInline):
-    model = Template
+class CharacterTemplateInline(admin.TabularInline):
+    model = CharacterTemplate
     fieldsets = (
         (
             (None, {
@@ -76,8 +52,20 @@ class TemplateInline(admin.TabularInline):
 
     extra = 0
 
-class FieldInline(admin.TabularInline):
-    model = Field
+class AttributeInline(admin.TabularInline):
+    model = Attribute
+    fieldsets = (
+        (
+            (None, {
+                'fields': ('name', )
+            })
+        ),
+    )
+
+    extra = 0
+
+class AttributeCategoryInline(admin.TabularInline):
+    model = AttributeCategory
     fieldsets = (
         (
             (None, {
@@ -105,7 +93,7 @@ class LayerInline(admin.TabularInline):
     fieldsets = (
         (
             (None, {
-                'fields': ('name', 'layer_height')
+                'fields': ('name', 'order')
             })
         ),
     )
@@ -124,70 +112,70 @@ class EntityInline(admin.TabularInline):
 
     extra = 0
 
-class PlayerAdmin(admin.ModelAdmin):
-    form = PlayerForm
-    inlines = [ParticipationInline, ]
-
-class ParticipationAdmin(admin.ModelAdmin):
-    form = ParticipationForm
-
+@admin.register(Character)
 class CharacterAdmin(admin.ModelAdmin):
     form = CharacterForm
-    inlines = [SheetInline, ]
 
-class SheetAdmin(admin.ModelAdmin):
-    form = SheetForm
-    inlines = [ValueInline, ]
 
+@admin.register(Value)
 class ValueAdmin(admin.ModelAdmin):
     form = ValueForm
 
+
+@admin.register(Game)
 class GameAdmin(admin.ModelAdmin):
     form = GameForm
-    list_display = ['name', 'universe', 'last_played_date', 'selected']
-    inlines = [ParticipationInline, NoteInline, MapInline]
+    list_display = ['name', 'universe', 'last_played_date', 'active']
 
-class NoteAdmin(admin.ModelAdmin):
-    form = NoteForm
 
+@admin.register(Message)
+class MessageAdmin(admin.ModelAdmin):
+    form = MessageForm
+
+
+@admin.register(Universe)
 class UniverseAdmin(admin.ModelAdmin):
     form = UniverseForm
-    inlines = [TemplateInline, ]
 
-class TemplateAdmin(admin.ModelAdmin):
-    form = TemplateForm
-    inlines = [FieldInline, ]
 
-class FieldAdmin(admin.ModelAdmin):
-    form = FieldForm
+@admin.register(CharacterTemplate)
+class CharacterTemplateAdmin(admin.ModelAdmin):
+    form = CharacterTemplateForm
 
+
+@admin.register(Attribute)
+class AttributeAdmin(admin.ModelAdmin):
+    form = AttributeForm
+
+
+@admin.register(Map)
 class MapAdmin(admin.ModelAdmin):
     form = MapForm
-    inlines = [LayerInline, ]
 
+
+@admin.register(Layer)
 class LayerAdmin(admin.ModelAdmin):
     form = LayerForm
-    list_display = ['map', 'name', 'layer_height', 'player_accessible']
-    inlines = [EntityInline, ]
+    list_display = ['map', 'name', 'order', 'editable']
 
+
+@admin.register(Entity)
 class EntityAdmin(admin.ModelAdmin):
     form = EntityForm
 
+
+@admin.register(Sprite)
 class SpriteAdmin(admin.ModelAdmin):
     form = SpriteForm
-    inlines = [EntityInline, ]
 
-admin.site.register(Player, PlayerAdmin)
-admin.site.register(Participation, ParticipationAdmin)
-admin.site.register(Character, CharacterAdmin)
-admin.site.register(Sheet, SheetAdmin)
-admin.site.register(Value, ValueAdmin)
-admin.site.register(Game, GameAdmin)
-admin.site.register(Note, NoteAdmin)
-admin.site.register(Universe, UniverseAdmin)
-admin.site.register(Template, TemplateAdmin)
-admin.site.register(Field, FieldAdmin)
-admin.site.register(Map, MapAdmin)
-admin.site.register(Layer, LayerAdmin)
-admin.site.register(Entity, EntityAdmin)
-admin.site.register(Sprite, SpriteAdmin)
+
+@admin.register(SpriteCategory)
+class SpriteCategoryAdmin(admin.ModelAdmin):
+    form = SpriteCategoryForm
+
+
+@admin.register(Image)
+class ImageAdmin(admin.ModelAdmin):
+    form = ImageForm
+
+

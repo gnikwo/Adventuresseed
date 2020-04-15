@@ -1,0 +1,7 @@
+{% if game_selected %}
+	{% for map in maps %}
+		<div class='map selectable {% if map.selected %} selected {% endif %}'>
+			{{ map.name }}
+		</div>
+	{% endfor %}
+{% endif %}

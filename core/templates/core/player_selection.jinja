@@ -1,0 +1,5 @@
+{% for character in game.characters.all %}
+    <div class='player selectable'>
+        {{ character.name }} ({{ character.name }})
+    </div>
+{% endfor %}

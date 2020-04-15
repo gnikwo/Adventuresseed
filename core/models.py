@@ -16,63 +16,52 @@ def path_and_rename(path):
     return wrapper
 
 
-class Player(models.Model):
-    name = models.CharField(max_length=20, blank=False)
-    color = models.CharField(max_length=6, blank=False)
-    creation_date = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.name
-
-class Participation(models.Model):
-    game = models.ForeignKey('Game', related_name='participations', on_delete=models.CASCADE, null=False)
-    player = models.ForeignKey('Player', related_name='participations', on_delete=models.CASCADE, null=True, blank=True)
-    character = models.ForeignKey('Character', related_name='participations', on_delete=models.CASCADE, null=True, blank=True)
-    creation_date = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return str(self.game) + ': ' + str(self.player) + ' ' + str(self.character)
-
 class Character(models.Model):
-    name = models.CharField(max_length=20, blank=False)
+    game = models.ForeignKey('Game', related_name='characters', on_delete=models.CASCADE, null=False)
+    name = models.CharField(max_length=40, blank=False)
+    player = models.CharField(max_length=40, blank=True)
+    chat_name = models.CharField(max_length=40, blank=True)
+    notes = models.TextField(blank=True)
+    color = models.CharField(max_length=6, blank=False)
+    profile_picture = models.ForeignKey('Image', related_name='profile_pictures', on_delete=models.CASCADE, null=True, blank=True)
+    template = models.ForeignKey('CharacterTemplate', related_name='characters', on_delete=models.CASCADE, null=False)
     creation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
 
-class Sheet(models.Model):
-    character = models.ForeignKey('Character', related_name='sheets', on_delete=models.CASCADE, null=False)
-    template = models.ForeignKey('Template', related_name='sheets', on_delete=models.CASCADE, null=False)
-
-    def __str__(self):
-        return str(self.character) + ': '
 
 class Value(models.Model):
-    sheet = models.ForeignKey('Sheet', related_name='values', on_delete=models.CASCADE, null=False)
-    field = models.ForeignKey('Field', related_name='values', on_delete=models.CASCADE, null=False)
+    character = models.ForeignKey('CharacterTemplate', related_name='values', on_delete=models.CASCADE, null=False)
+    attribute = models.ForeignKey('Attribute', related_name='values', on_delete=models.CASCADE, null=False)
     value = models.CharField(max_length=20, blank=True)
 
     def __str__(self):
         return str(self.character) + ': '
 
+
 class Game(models.Model):
     name = models.CharField(max_length=50, blank=False)
     universe = models.ForeignKey('Universe', related_name='games', on_delete=models.CASCADE, null=False)
-    creation_date = models.DateTimeField(auto_now_add=True)
+    notes = models.TextField(blank=True)
+    active = models.BooleanField(default=False)
     last_played_date = models.DateTimeField()
-    selected = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.name
-
-class Note(models.Model):
-    name = models.CharField(max_length=50, blank=False)
-    text = models.TextField(blank=True)
-    game = models.ForeignKey('Game', related_name='notes', on_delete=models.CASCADE, null=False)
     creation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
+
+
+class Message(models.Model):
+    text = models.TextField(blank=True)
+    game = models.ForeignKey('Game', related_name='messages', on_delete=models.CASCADE, null=False)
+    character = models.ForeignKey('CharacterTemplate', related_name='messages', on_delete=models.CASCADE, null=False)
+    image = models.ForeignKey('Sprite', related_name='messages', on_delete=models.CASCADE, null=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
+
 
 class Universe(models.Model):
     name = models.CharField(max_length=20, blank=False)
@@ -81,45 +70,49 @@ class Universe(models.Model):
     def __str__(self):
         return self.name
 
-class Template(models.Model):
+
+class CharacterTemplate(models.Model):
     name = models.CharField(max_length=50, blank=False)
-    #image = models.ImageField(upload_to=path_and_rename('media/templates/'), null=False)
-    image = models.ImageField(upload_to='media/templates/', null=False)
     universe = models.ForeignKey('Universe', related_name='template', on_delete=models.CASCADE, null=False)
     creation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.universe) + ' - ' + str(self.name)
 
-class Field(models.Model):
+
+class Attribute(models.Model):
     name = models.CharField(max_length=40, blank=False)
-    position_x = models.IntegerField(null=False, default=0)
-    position_y = models.IntegerField(null=False, default=0)
-    scale_x = models.IntegerField(null=False, default=0)
-    scale_y = models.IntegerField(null=False, default=0)
-    template = models.ForeignKey('Template', related_name='fields', on_delete=models.CASCADE, null=False)
+    category = models.ForeignKey('AttributeCategory', related_name='attributes', on_delete=models.CASCADE, null=False)
 
     def __str__(self):
         return self.name
+
+
+class AttributeCategory(models.Model):
+    name = models.CharField(max_length=40, blank=False)
+    template = models.ForeignKey('CharacterTemplate', related_name='fields', on_delete=models.CASCADE, null=False)
+    order = models.IntegerField(null=False)
+
 
 class Map(models.Model):
-    name = models.CharField(max_length=20, blank=False)
+    name = models.CharField(max_length=40, blank=False)
     active = models.BooleanField()
     game = models.ForeignKey('Game', related_name='maps', on_delete=models.CASCADE, null=False)
-    creation_date = models.DateTimeField(auto_now_add=True)
+    order = models.IntegerField(null=False)
 
     def __str__(self):
         return self.name
+
 
 class Layer(models.Model):
-    name = models.CharField(max_length=20, blank=False)
-    layer_height = models.IntegerField(null=False)
+    name = models.CharField(max_length=40, blank=False)
+    editable = models.BooleanField(default=False)
+    order = models.IntegerField(null=False)
     map = models.ForeignKey('Map', related_name='layers', on_delete=models.CASCADE, null=False)
-    player_accessible = models.BooleanField(default=False)
-    creation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
+
 
 class Entity(models.Model):
     class Meta:
@@ -128,17 +121,29 @@ class Entity(models.Model):
     position_y = models.IntegerField(null=False, default=0)
     scale_x = models.IntegerField(null=False, default=0)
     scale_y = models.IntegerField(null=False, default=0)
+    rotation = models.FloatField(null=False, default=0)
     layer = models.ForeignKey('Layer', related_name='entities', on_delete=models.CASCADE, null=False)
     sprite = models.ForeignKey('Sprite', related_name='entities', on_delete=models.CASCADE, null=False)
-    creation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.sprite)
 
+
 class Sprite(models.Model):
-    name = models.CharField(max_length=20, blank=False)
+    image = models.ForeignKey('Image', related_name='sprites', on_delete=models.CASCADE, null=False)
+    category = models.ForeignKey('SpriteCategory', related_name='attributes', on_delete=models.CASCADE, null=False)
+
+
+class SpriteCategory(models.Model):
+    name = models.CharField(max_length=40, blank=False)
+
+
+class Image(models.Model):
+    name = models.CharField(max_length=40, blank=False)
     image = models.ImageField(upload_to='media/sprites/', null=False)
     creation_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
+
+
